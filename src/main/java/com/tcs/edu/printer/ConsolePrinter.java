@@ -1,3 +1,5 @@
+package com.tcs.edu.printer;
+
 /**
  * Класс предназначен для вывода сообщений на консоль
  * @author e.krivosheyev
