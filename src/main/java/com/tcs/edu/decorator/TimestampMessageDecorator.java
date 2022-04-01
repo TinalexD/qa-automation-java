@@ -10,9 +10,10 @@ public class TimestampMessageDecorator {
     /**
      * Метод для декорирования сообщения временем в формате timestamp
      * @param message сообщение, которое необходимо задекорировать
-     * @return задекорированное сообщение
+     * @return переменная с задекорированным сообщением
      */
     public static String decorate(String message) {
-        return Instant.now() + " " + message;
+        String decoratedMessage = Instant.now() + " " + message;
+        return decoratedMessage;
     }
 }
