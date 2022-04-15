@@ -9,6 +9,7 @@ import java.time.Instant;
  */
 public class TimestampMessageDecorator {
     public static int messageCount = 1;
+    public static int pageSize = 2;
 
     /**
      * Метод для декорирования сообщения временем в формате timestamp
@@ -17,7 +18,13 @@ public class TimestampMessageDecorator {
      * @return переменная с задекорированным сообщением
      */
     public static String decorate(String message) {
-        final var decoratedMessage = messageCount + " " + Instant.now() + " " + message;
-        return decoratedMessage;
+        final var decoratedMessage = String.format("%d %s %s", messageCount, Instant.now(), message);
+        final var pageSeparator = "---";
+
+        if (messageCount % pageSize == 0){
+            return String.format("%s %n %s", decoratedMessage, pageSeparator);
+        } else {
+            return decoratedMessage;
+        }
     }
 }
