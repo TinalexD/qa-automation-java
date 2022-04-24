@@ -12,10 +12,10 @@ public class ConsolePrinter {
     /**
      * Метод выводит переданное сообщение на консоль
      *
-     * @param message сообщение которое надо вывести на консоль
+     * @param decoratedMessage задекорированное сообщение которое надо вывести на консоль
      */
-    public static void print(String message) {
+    public static void print(String decoratedMessage) {
         messageCount++;
-        System.out.println(message);
+        System.out.println(decoratedMessage);
     }
 }
