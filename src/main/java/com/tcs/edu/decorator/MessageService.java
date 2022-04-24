@@ -22,18 +22,23 @@ public class MessageService {
      * @param message получаемое сообщение
      */
     public static void process(Severity level, String message, String... massages) {
-        if (messageCount % pageSize == 0) {
-            String preparedMessage = String.format("%s %s", decorate(message), severityMapper(level));
-            print(separatePage(preparedMessage));
-        } else {
-            print(String.format("%s %s", decorate(message), severityMapper(level)));
-        }
-        for (String currentMessage : massages) {
+        if (message != null) {
             if (messageCount % pageSize == 0) {
-                String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
-                print(separatePage(decoratedCurrentMessage));
+                String preparedMessage = String.format("%s %s", decorate(message), severityMapper(level));
+                print(separatePage(preparedMessage));
             } else {
-                print(String.format("%s %s", decorate(currentMessage), severityMapper(level)));
+                print(String.format("%s %s", decorate(message), severityMapper(level)));
+            }
+        }
+
+        for (String currentMessage : massages) {
+            if (currentMessage != null) {
+                if (messageCount % pageSize == 0) {
+                    String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
+                    print(separatePage(decoratedCurrentMessage));
+                } else {
+                    print(String.format("%s %s", decorate(currentMessage), severityMapper(level)));
+                }
             }
         }
     }
