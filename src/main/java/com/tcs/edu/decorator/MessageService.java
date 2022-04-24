@@ -20,6 +20,7 @@ public class MessageService {
      *
      * @param level   урочень важности сообщения
      * @param message получаемое сообщение
+     * @param massages список сообщений
      */
     public static void process(Severity level, String message, String... massages) {
         if (message != null) {
@@ -32,6 +33,46 @@ public class MessageService {
         }
 
         for (String currentMessage : massages) {
+            if (currentMessage != null) {
+                if (messageCount % pageSize == 0) {
+                    String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
+                    print(separatePage(decoratedCurrentMessage));
+                } else {
+                    print(String.format("%s %s", decorate(currentMessage), severityMapper(level)));
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     * @param level   урочень важности сообщения
+     * @param order порядок сортировки
+     * @param message получаемое сообщение
+     * @param massages список сообщений
+     */
+    public static void process(Severity level, MessageOrder order, String message, String... massages) {
+        if (message != null) {
+            if (messageCount % pageSize == 0) {
+                String preparedMessage = String.format("%s %s", decorate(message), severityMapper(level));
+                print(separatePage(preparedMessage));
+            } else {
+                print(String.format("%s %s", decorate(message), severityMapper(level)));
+            }
+        }
+
+        String[] sortedMassages = new String[massages.length];
+        if (order == MessageOrder.DESC) {
+            int decorCounter = 0;
+            for (int counter = sortedMassages.length - 1; counter >= 0; counter--) {
+                sortedMassages[decorCounter] = massages[counter];
+                decorCounter++;
+            }
+        } else {
+            sortedMassages = massages;
+        }
+
+        for (String currentMessage : sortedMassages) {
             if (currentMessage != null) {
                 if (messageCount % pageSize == 0) {
                     String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
