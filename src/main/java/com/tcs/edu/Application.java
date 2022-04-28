@@ -10,9 +10,9 @@ import com.tcs.edu.decorator.Severity;
 class Application {
     public static void main(String[] args) {
         process(Severity.MINOR,
-                MessageOrder.DESC,
-                Doubling.DISTINCT,
-                null,
+                MessageOrder.ASC,
+                Doubling.DOUBLES,
+                "Hello world 1!",
                 "Hello world 1!",
                 "Hello world 2!",
                 null,

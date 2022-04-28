@@ -2,6 +2,9 @@ package com.tcs.edu.decorator;
 
 import java.util.Arrays;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import static com.tcs.edu.printer.ConsolePrinter.print;
 import static com.tcs.edu.decorator.TimestampMessageDecorator.decorate;
 import static com.tcs.edu.decorator.SeverityMapper.severityMapper;
@@ -25,16 +28,11 @@ public class MessageService {
      * @param massages список сообщений
      */
     public static void process(Severity level, String message, String... massages) {
-        if (message != null) {
-            if (messageCount % pageSize == 0) {
-                String preparedMessage = String.format("%s %s", decorate(message), severityMapper(level));
-                print(separatePage(preparedMessage));
-            } else {
-                print(String.format("%s %s", decorate(message), severityMapper(level)));
-            }
-        }
+        ArrayList<String> listOfMessages = new ArrayList<>();
+        listOfMessages.add(message);
+        Collections.addAll(listOfMessages, massages);
 
-        for (String currentMessage : massages) {
+        for (String currentMessage : listOfMessages) {
             if (currentMessage != null) {
                 if (messageCount % pageSize == 0) {
                     String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
@@ -53,59 +51,32 @@ public class MessageService {
      * @param massages список сообщений
      */
     public static void process(Severity level, MessageOrder order, Doubling doubling, String message, String... massages) {
-        if (message != null) {
-            if (messageCount % pageSize == 0) {
-                String preparedMessage = String.format("%s %s", decorate(message), severityMapper(level));
-                print(separatePage(preparedMessage));
-            } else {
-                print(String.format("%s %s", decorate(message), severityMapper(level)));
-            }
-        }
-
-        String[] sortedMassages = new String[massages.length];
+        ArrayList<String> sortedMassages = new ArrayList<>();
+        sortedMassages.add(message);
         if (order == MessageOrder.DESC) {
-            int decorCounter = 0;
-            for (int counter = sortedMassages.length - 1; counter >= 0; counter--) {
-                sortedMassages[decorCounter] = massages[counter];
-                decorCounter++;
+            for (String massage : massages) {
+                sortedMassages.add(0, massage);
             }
         } else {
-            sortedMassages = massages;
+            sortedMassages.addAll(Arrays.asList(massages));
         }
 
+        String[] filteredMessages = new String[massages.length + 1];
         if (doubling == Doubling.DISTINCT) {
-            String[] filteredMessage = new String[sortedMassages.length];
             int filterCount = 0;
             for (String currentMessage : sortedMassages) {
-                if (currentMessage != null) {
-                    if (!Arrays.asList(filteredMessage).contains(currentMessage)) {
-                        filteredMessage[filterCount] = currentMessage;
-                        filterCount++;
-                        if (messageCount % pageSize == 0) {
-                            String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
-                            print(separatePage(decoratedCurrentMessage));
-                        } else {
-                            print(String.format("%s %s", decorate(currentMessage), severityMapper(level)));
-                        }
-                    } else {
-                        continue;
-                    }
+                if (!Arrays.asList(filteredMessages).contains(currentMessage)) {
+                    filteredMessages[filterCount] = currentMessage;
+                    filterCount++;
                 }
             }
-
         } else {
+            int filterCount = 0;
             for (String currentMessage : sortedMassages) {
-                if (currentMessage != null) {
-                    if (messageCount % pageSize == 0) {
-                        String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
-                        print(separatePage(decoratedCurrentMessage));
-                    } else {
-                        print(String.format("%s %s", decorate(currentMessage), severityMapper(level)));
-                    }
-                }
+                filteredMessages[filterCount] = currentMessage;
+                filterCount++;
             }
         }
-
-
+        process(level, null, filteredMessages);
     }
 }
