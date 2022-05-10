@@ -34,7 +34,7 @@ public class MessageService {
         Collections.addAll(listOfMessages, massages);
 
         for (Message currentMessage : listOfMessages) {
-            if (currentMessage.getMessage() != null) {
+            if (currentMessage!= null && currentMessage.getMessage()!=null) {
                 if (messageCount % pageSize == 0) {
                     String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(currentMessage.getLevel()));
                     print(separatePage(decoratedCurrentMessage));
@@ -59,8 +59,10 @@ public class MessageService {
         Message[] filteredMessages = new Message[sortedMessages.length + 1];
         int filterCount = 0;
         if (doubling == Doubling.DISTINCT) {
+            ArrayList<String> listOfDublicates = new ArrayList<>();
             for (Message currentMessage : listOfMassages) {
-                if (!Arrays.asList(filteredMessages).equals(currentMessage)) {
+                if (!listOfDublicates.contains(currentMessage.getMessage())) {
+                    listOfDublicates.add(currentMessage.getMessage());
                     filteredMessages[filterCount] = currentMessage;
                     filterCount++;
                 }

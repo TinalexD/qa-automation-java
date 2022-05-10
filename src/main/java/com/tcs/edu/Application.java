@@ -11,12 +11,11 @@ import com.tcs.edu.domain.Message;
 class Application {
     public static void main(String[] args) {
         Message message1 = new Message("Hello world 1!", Severity.MINOR);
-        Message message2 = new Message("Hello world 1!", Severity.MAJOR);
+        Message message2 = new Message("Hello world 1!", Severity.MINOR);
         Message message3 = new Message("Hello world 1!");
         Message message4 = new Message("Hello world 2!");
         Message message5 = new Message("Hello world 3!", Severity.MINOR);
         Message message6 = new Message("Hello world 4!", Severity.MINOR);
-        //Message message7 = new Message("Hello world 1!", Severity.MINOR);
 
 
         process(MessageOrder.DESC, Doubling.DISTINCT,
@@ -25,8 +24,7 @@ class Application {
                 message3,
                 message4,
                 message5,
-                message6//,
-                //message7
+                message6
         );
     }
 }
