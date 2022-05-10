@@ -2,10 +2,9 @@ package com.tcs.edu.decorator;
 
 import com.tcs.edu.MessageDecorator;
 import com.tcs.edu.Printer;
-import com.tcs.edu.Processor;
+import com.tcs.edu.MessageService;
 import com.tcs.edu.Separator;
 import com.tcs.edu.domain.Message;
-import com.tcs.edu.printer.ConsolePrinter;
 
 import java.util.Arrays;
 
@@ -22,7 +21,16 @@ import static com.tcs.edu.decorator.TimestampMessageDecorator.pageSize;
  *
  * @author a.v.demchenko
  */
-public class MessageService implements Processor {
+public class OrderedDistinctedMessageService implements MessageService {
+    private Printer printer;
+    private MessageDecorator time;
+    private Separator page;
+
+    public OrderedDistinctedMessageService(Printer printer, MessageDecorator time, Separator page) {
+        this.printer = printer;
+        this.time = time;
+        this.page = page;
+    }
 
     /**
      * метод, который предназначен для преобразования сообщения в необходимый вид с последующим выводом его на консоль
@@ -32,14 +40,12 @@ public class MessageService implements Processor {
      */
     public void process(Message message, Message... massages) {
         ArrayList<Message> listOfMessages = new ArrayList<>();
+
         listOfMessages.add(message);
         Collections.addAll(listOfMessages, massages);
-        Printer printer = new ConsolePrinter();
-        MessageDecorator time = new TimestampMessageDecorator();
-        Separator page = new PageSeparator();
 
         for (Message currentMessage : listOfMessages) {
-            if (currentMessage!= null && currentMessage.getMessage()!=null) {
+            if (currentMessage != null && currentMessage.getMessage() != null) {
                 if (messageCount % pageSize == 0) {
                     String decoratedCurrentMessage = String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel()));
                     printer.print(page.separatePage(decoratedCurrentMessage));
@@ -51,9 +57,8 @@ public class MessageService implements Processor {
     }
 
     /**
-     *
-     * @param doubling режим дублирования
-     * @param message получаемое сообщение
+     * @param doubling       режим дублирования
+     * @param message        получаемое сообщение
      * @param sortedMessages список сообщений
      */
     public void process(Doubling doubling, Message message, Message... sortedMessages) {
@@ -92,13 +97,13 @@ public class MessageService implements Processor {
         Message[] sortedMessages = new Message[massages.length + 1];
         int messageNumber = 0;
         if (order == MessageOrder.DESC) {
-            for (int i = massages.length - 1; i>=0; i--){
+            for (int i = massages.length - 1; i >= 0; i--) {
                 sortedMessages[messageNumber] = massages[i];
                 messageNumber++;
             }
-            sortedMessages[sortedMessages.length-1] = message;
+            sortedMessages[sortedMessages.length - 1] = message;
         } else {
-            for(Message currentMessage: massages){
+            for (Message currentMessage : massages) {
                 messageNumber++;
                 sortedMessages[messageNumber] = currentMessage;
             }

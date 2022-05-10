@@ -2,9 +2,12 @@ package com.tcs.edu;
 
 import com.tcs.edu.decorator.Doubling;
 import com.tcs.edu.decorator.MessageOrder;
-import com.tcs.edu.decorator.MessageService;
+import com.tcs.edu.decorator.OrderedDistinctedMessageService;
+import com.tcs.edu.decorator.PageSeparator;
 import com.tcs.edu.decorator.Severity;
+import com.tcs.edu.decorator.TimestampMessageDecorator;
 import com.tcs.edu.domain.Message;
+import com.tcs.edu.printer.ConsolePrinter;
 
 
 class Application {
@@ -16,8 +19,12 @@ class Application {
         Message message5 = new Message("Hello world 3!", Severity.MINOR);
         Message message6 = new Message("Hello world 4!", Severity.MAJOR);
 
-        Processor Service = new MessageService();
-        Service.process(MessageOrder.ASC, Doubling.DISTINCT,
+        MessageService Service = new OrderedDistinctedMessageService(
+                new ConsolePrinter(),
+                new TimestampMessageDecorator(),
+                new PageSeparator());
+
+        Service.process(MessageOrder.DESC, Doubling.DOUBLES,
                 message1,
                 message2,
                 message3,
