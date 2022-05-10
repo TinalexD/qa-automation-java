@@ -1,5 +1,7 @@
 package com.tcs.edu.decorator;
 
+import com.tcs.edu.domain.Message;
+
 import java.util.Arrays;
 
 import java.util.ArrayList;
@@ -16,67 +18,87 @@ import static com.tcs.edu.decorator.PageSeparator.separatePage;
 /**
  * Класс-ядро, который выполняет необходимые действия с ообщением
  *
- * @author
+ * @author a.v.demchenko
  */
 public class MessageService {
 
     /**
      * метод, который предназначен для преобразования сообщения в необходимый вид с последующим выводом его на консоль
      *
-     * @param level    урочень важности сообщения
      * @param message  получаемое сообщение
      * @param massages список сообщений
      */
-    public static void process(Severity level, String message, String... massages) {
-        ArrayList<String> listOfMessages = new ArrayList<>();
+    public static void process(Message message, Message... massages) {
+        ArrayList<Message> listOfMessages = new ArrayList<>();
         listOfMessages.add(message);
         Collections.addAll(listOfMessages, massages);
 
-        for (String currentMessage : listOfMessages) {
-            if (currentMessage != null) {
+        for (Message currentMessage : listOfMessages) {
+            if (currentMessage.getMessage() != null) {
                 if (messageCount % pageSize == 0) {
-                    String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(level));
+                    String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(currentMessage.getLevel()));
                     print(separatePage(decoratedCurrentMessage));
                 } else {
-                    print(String.format("%s %s", decorate(currentMessage), severityMapper(level)));
+                    print(String.format("%s %s", decorate(currentMessage), severityMapper(currentMessage.getLevel())));
                 }
             }
         }
     }
 
     /**
-     * @param level    урочень важности сообщения
-     * @param order    порядок сортировки
-     * @param message  получаемое сообщение
-     * @param massages список сообщений
+     *
+     * @param doubling режим дублирования
+     * @param message получаемое сообщение
+     * @param sortedMessages список сообщений
      */
-    public static void process(Severity level, MessageOrder order, Doubling doubling, String message, String... massages) {
-        ArrayList<String> sortedMassages = new ArrayList<>();
-        sortedMassages.add(message);
-        if (order == MessageOrder.DESC) {
-            for (String massage : massages) {
-                sortedMassages.add(0, massage);
-            }
-        } else {
-            sortedMassages.addAll(Arrays.asList(massages));
-        }
+    public static void process(Doubling doubling, Message message, Message... sortedMessages) {
+        ArrayList<Message> listOfMassages = new ArrayList<>();
+        listOfMassages.add(message);
+        listOfMassages.addAll(Arrays.asList(sortedMessages));
 
-        String[] filteredMessages = new String[massages.length + 1];
+        Message[] filteredMessages = new Message[sortedMessages.length + 1];
+        int filterCount = 0;
         if (doubling == Doubling.DISTINCT) {
-            int filterCount = 0;
-            for (String currentMessage : sortedMassages) {
-                if (!Arrays.asList(filteredMessages).contains(currentMessage)) {
+            for (Message currentMessage : listOfMassages) {
+                if (!Arrays.asList(filteredMessages).equals(currentMessage)) {
                     filteredMessages[filterCount] = currentMessage;
                     filterCount++;
                 }
             }
         } else {
-            int filterCount = 0;
-            for (String currentMessage : sortedMassages) {
+            for (Message currentMessage : listOfMassages) {
                 filteredMessages[filterCount] = currentMessage;
                 filterCount++;
             }
         }
-        process(level, null, filteredMessages);
+        process(new Message(), filteredMessages);
+
     }
+
+    /**
+     * @param order    порядок сортировки
+     * @param doubling режим дублирования
+     * @param message  получаемое сообщение
+     * @param massages список сообщений
+     */
+    public static void process(MessageOrder order, Doubling doubling, Message message, Message... massages) {
+        Message[] sortedMessages = new Message[massages.length + 1];
+        int messageNumber = 0;
+        if (order == MessageOrder.DESC) {
+            for (int i = massages.length - 1; i>=0; i--){
+                sortedMessages[messageNumber] = massages[i];
+                messageNumber++;
+            }
+            sortedMessages[sortedMessages.length-1] = message;
+        } else {
+            for(Message currentMessage: massages){
+                messageNumber++;
+                sortedMessages[messageNumber] = currentMessage;
+            }
+            sortedMessages[0] = message;
+        }
+        process(doubling, new Message(), sortedMessages);
+    }
+
+
 }
