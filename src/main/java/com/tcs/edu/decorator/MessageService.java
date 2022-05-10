@@ -1,18 +1,20 @@
 package com.tcs.edu.decorator;
 
+import com.tcs.edu.MessageDecorator;
+import com.tcs.edu.Printer;
+import com.tcs.edu.Processor;
+import com.tcs.edu.Separator;
 import com.tcs.edu.domain.Message;
+import com.tcs.edu.printer.ConsolePrinter;
 
 import java.util.Arrays;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static com.tcs.edu.printer.ConsolePrinter.print;
-import static com.tcs.edu.decorator.TimestampMessageDecorator.decorate;
 import static com.tcs.edu.decorator.SeverityMapper.severityMapper;
 import static com.tcs.edu.decorator.TimestampMessageDecorator.messageCount;
 import static com.tcs.edu.decorator.TimestampMessageDecorator.pageSize;
-import static com.tcs.edu.decorator.PageSeparator.separatePage;
 
 
 /**
@@ -20,7 +22,7 @@ import static com.tcs.edu.decorator.PageSeparator.separatePage;
  *
  * @author a.v.demchenko
  */
-public class MessageService {
+public class MessageService implements Processor {
 
     /**
      * метод, который предназначен для преобразования сообщения в необходимый вид с последующим выводом его на консоль
@@ -28,18 +30,21 @@ public class MessageService {
      * @param message  получаемое сообщение
      * @param massages список сообщений
      */
-    public static void process(Message message, Message... massages) {
+    public void process(Message message, Message... massages) {
         ArrayList<Message> listOfMessages = new ArrayList<>();
         listOfMessages.add(message);
         Collections.addAll(listOfMessages, massages);
+        Printer printer = new ConsolePrinter();
+        MessageDecorator time = new TimestampMessageDecorator();
+        Separator page = new PageSeparator();
 
         for (Message currentMessage : listOfMessages) {
             if (currentMessage!= null && currentMessage.getMessage()!=null) {
                 if (messageCount % pageSize == 0) {
-                    String decoratedCurrentMessage = String.format("%s %s", decorate(currentMessage), severityMapper(currentMessage.getLevel()));
-                    print(separatePage(decoratedCurrentMessage));
+                    String decoratedCurrentMessage = String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel()));
+                    printer.print(page.separatePage(decoratedCurrentMessage));
                 } else {
-                    print(String.format("%s %s", decorate(currentMessage), severityMapper(currentMessage.getLevel())));
+                    printer.print(String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel())));
                 }
             }
         }
@@ -51,7 +56,7 @@ public class MessageService {
      * @param message получаемое сообщение
      * @param sortedMessages список сообщений
      */
-    public static void process(Doubling doubling, Message message, Message... sortedMessages) {
+    public void process(Doubling doubling, Message message, Message... sortedMessages) {
         ArrayList<Message> listOfMassages = new ArrayList<>();
         listOfMassages.add(message);
         listOfMassages.addAll(Arrays.asList(sortedMessages));
@@ -83,7 +88,7 @@ public class MessageService {
      * @param message  получаемое сообщение
      * @param massages список сообщений
      */
-    public static void process(MessageOrder order, Doubling doubling, Message message, Message... massages) {
+    public void process(MessageOrder order, Doubling doubling, Message message, Message... massages) {
         Message[] sortedMessages = new Message[massages.length + 1];
         int messageNumber = 0;
         if (order == MessageOrder.DESC) {
