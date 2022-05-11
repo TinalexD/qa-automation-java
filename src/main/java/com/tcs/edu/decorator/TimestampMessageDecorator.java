@@ -1,5 +1,8 @@
 package com.tcs.edu.decorator;
 
+import com.tcs.edu.MessageDecorator;
+import com.tcs.edu.domain.Message;
+
 import java.time.Instant;
 
 /**
@@ -7,7 +10,7 @@ import java.time.Instant;
  *
  * @author a.v.demchenko
  */
-public class TimestampMessageDecorator {
+public class TimestampMessageDecorator implements MessageDecorator {
     public static int messageCount = 1;
     public static int pageSize = 2;
 
@@ -17,8 +20,8 @@ public class TimestampMessageDecorator {
      * @param message сообщение, которое необходимо задекорировать
      * @return переменная с задекорированным сообщением
      */
-    public static String decorate(String message) {
-        final var decoratedMessage = String.format("%d %s %s", messageCount, Instant.now(), message);
+    public String decorate(Message message) {
+        final var decoratedMessage = String.format("%d %s %s", messageCount, Instant.now(), message.getMessage());
         return decoratedMessage;
     }
 
