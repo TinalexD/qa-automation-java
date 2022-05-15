@@ -24,7 +24,7 @@ class Application {
                 new TimestampMessageDecorator(),
                 new PageSeparator());
 
-        Service.process(MessageOrder.DESC, Doubling.DOUBLES,
+        Service.process(MessageOrder.ASC, Doubling.DOUBLES,
                 message1,
                 message2,
                 message3,

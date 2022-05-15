@@ -21,7 +21,7 @@ import static com.tcs.edu.decorator.TimestampMessageDecorator.pageSize;
  *
  * @author a.v.demchenko
  */
-public class OrderedDistinctedMessageService implements MessageService {
+public class OrderedDistinctedMessageService extends ValidatedService implements MessageService {
     private Printer printer;
     private MessageDecorator time;
     private Separator page;
@@ -40,12 +40,11 @@ public class OrderedDistinctedMessageService implements MessageService {
      */
     public void process(Message message, Message... massages) {
         ArrayList<Message> listOfMessages = new ArrayList<>();
-
         listOfMessages.add(message);
         Collections.addAll(listOfMessages, massages);
 
         for (Message currentMessage : listOfMessages) {
-            if (currentMessage != null && currentMessage.getMessage() != null) {
+            if (super.isArgsValid(currentMessage)) {
                 if (messageCount % pageSize == 0) {
                     String decoratedCurrentMessage = String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel()));
                     printer.print(page.separatePage(decoratedCurrentMessage));
