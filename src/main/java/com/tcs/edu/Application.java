@@ -41,6 +41,5 @@ class Application {
         System.out.println(message1.equals(message4));
         System.out.println(message1.hashCode() == message2.hashCode());
         System.out.println(message1.hashCode() == message4.hashCode());
-        System.out.println(message1.hashCode() == message4.hashCode());
     }
 }
