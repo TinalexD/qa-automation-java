@@ -9,6 +9,8 @@ import com.tcs.edu.decorator.TimestampMessageDecorator;
 import com.tcs.edu.domain.Message;
 import com.tcs.edu.printer.ConsolePrinter;
 
+import java.util.Arrays;
+
 
 class Application {
     public static void main(String[] args) {
@@ -24,7 +26,7 @@ class Application {
                 new TimestampMessageDecorator(),
                 new PageSeparator());
 
-        Service.process(MessageOrder.DESC, Doubling.DOUBLES,
+        Service.process(MessageOrder.DESC, Doubling.DISTINCT,
                 message1,
                 message2,
                 message3,
@@ -32,5 +34,12 @@ class Application {
                 message5,
                 message6
         );
+
+        System.out.println(message1.getMessage() == message2.getMessage());
+        System.out.println(message1.getMessage() == message4.getMessage());
+        System.out.println(message1.equals(message2));
+        System.out.println(message1.equals(message4));
+        System.out.println(message1.hashCode() == message2.hashCode());
+        System.out.println(message1.hashCode() == message4.hashCode());
     }
 }
