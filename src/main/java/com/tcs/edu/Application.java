@@ -20,19 +20,23 @@ class Application {
         Message message4 = new Message("Hello world 2!");
         Message message5 = new Message("Hello world 3!", Severity.MINOR);
         Message message6 = new Message("Hello world 4!", Severity.MAJOR);
+        Message message7 = new Message(null, Severity.MAJOR);
+
 
         MessageService Service = new OrderedDistinctedMessageService(
                 new ConsolePrinter(),
                 new TimestampMessageDecorator(),
                 new PageSeparator());
 
-        Service.process(MessageOrder.DESC, Doubling.DISTINCT,
-                message1,
-                message2,
-                message3,
-                message4,
-                message5,
-                message6
+        Service.process(MessageOrder.DESC, Doubling.DISTINCT
+                ,message1
+                ,message2
+                ,message3
+                ,message4
+                ,message5
+                ,message6
+                //,message7
+                //,null
         );
 
         System.out.println(message1.getMessage() == message2.getMessage());

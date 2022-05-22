@@ -46,16 +46,15 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
 
         for (Message currentMessage : listOfMessages) {
             try {
-                if (super.isArgsValid(currentMessage)) {
-                    if (messageCount % pageSize == 0) {
-                        String decoratedCurrentMessage = String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel()));
-                        printer.print(page.separatePage(decoratedCurrentMessage));
-                    } else {
-                        printer.print(String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel())));
-                    }
+                super.isArgsValid(currentMessage);
+                if (messageCount % pageSize == 0) {
+                    String decoratedCurrentMessage = String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel()));
+                    printer.print(page.separatePage(decoratedCurrentMessage));
+                } else {
+                    printer.print(String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel())));
                 }
-            } catch (IllegalArgumentException e){
-                throw new LogException(notValidArgMessage, e);
+            } catch (IllegalArgumentException e) {
+                throw new LogException("notValidArgMessage", e);
             }
         }
     }
@@ -69,21 +68,27 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
         if (doubling == Doubling.DISTINCT) {
             ArrayList<Message> listOfMassages = new ArrayList<>();
             ArrayList<String> listOfDublicates = new ArrayList<>();
-            listOfDublicates.add(message.getMessage());
-            int filterCount = 0;
-            for (int i = 0; i < sortedMessages.length - 1; i++) {
-                if (!listOfDublicates.contains(sortedMessages[i].getMessage())) {
-                    listOfDublicates.add(sortedMessages[i].getMessage());
-                    listOfMassages.add(sortedMessages[i]);
+            try {
+                super.isArgsValid(message);
+                listOfDublicates.add(message.getMessage());
+                int filterCount = 0;
+                for (int i = 0; i < sortedMessages.length - 1; i++) {
+                    super.isArgsValid(sortedMessages[i]);
+                    if (!listOfDublicates.contains(sortedMessages[i].getMessage())) {
+                        listOfDublicates.add(sortedMessages[i].getMessage());
+                        listOfMassages.add(sortedMessages[i]);
+                    }
                 }
-            }
 
-            Message[] filteredMessages = new Message[listOfMassages.size()];
-            for (Message currentMessage : listOfMassages) {
-                filteredMessages[filterCount] = currentMessage;
-                filterCount++;
+                Message[] filteredMessages = new Message[listOfMassages.size()];
+                for (Message currentMessage : listOfMassages) {
+                    filteredMessages[filterCount] = currentMessage;
+                    filterCount++;
+                }
+                process(message, filteredMessages);
+            } catch (IllegalArgumentException e) {
+                throw new LogException("notValidArgMessage", e);
             }
-            process(message, filteredMessages);
         } else {
             process(message, sortedMessages);
         }
