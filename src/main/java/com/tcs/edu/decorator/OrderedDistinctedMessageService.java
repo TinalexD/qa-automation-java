@@ -80,11 +80,7 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
                     }
                 }
 
-                Message[] filteredMessages = new Message[listOfMassages.size()];
-                for (Message currentMessage : listOfMassages) {
-                    filteredMessages[filterCount] = currentMessage;
-                    filterCount++;
-                }
+                Message[] filteredMessages = listOfMassages.stream().toArray(Message[]::new);
                 process(message, filteredMessages);
             } catch (IllegalArgumentException e) {
                 throw new LogException("notValidArgMessage", e);
