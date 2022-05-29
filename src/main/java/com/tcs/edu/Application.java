@@ -40,9 +40,13 @@ class Application {
                 //,null
         );
         System.out.println(Service.findByPrimaryKey(message1.getId()));
+        System.out.println("----------");
         for (Message current : Service.findAll()) {
             System.out.println(current);
         }
-        ;
+        System.out.println("----------");
+        for (Message current : Service.findBySeverity(Severity.MINOR)) {
+            System.out.println(current);
+        }
     }
 }

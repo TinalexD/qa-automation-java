@@ -128,4 +128,8 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
     public Collection<Message> findAll(){
         return messageRepository.findAll();
     }
+
+    public Collection<Message> findBySeverity(Severity by){
+        return messageRepository.findBySeverity(by);
+    }
 }
