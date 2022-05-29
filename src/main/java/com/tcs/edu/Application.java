@@ -8,6 +8,7 @@ import com.tcs.edu.decorator.Severity;
 import com.tcs.edu.decorator.TimestampMessageDecorator;
 import com.tcs.edu.domain.Message;
 import com.tcs.edu.printer.ConsolePrinter;
+import com.tcs.edu.repository.HashMapMessageRepository;
 
 import java.util.Arrays;
 
@@ -38,12 +39,5 @@ class Application {
                 //,message7
                 //,null
         );
-
-        System.out.println(message1.getMessage() == message2.getMessage());
-        System.out.println(message1.getMessage() == message4.getMessage());
-        System.out.println(message1.equals(message2));
-        System.out.println(message1.equals(message4));
-        System.out.println(message1.hashCode() == message2.hashCode());
-        System.out.println(message1.hashCode() == message4.hashCode());
     }
 }

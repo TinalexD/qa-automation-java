@@ -2,15 +2,16 @@ package com.tcs.edu.decorator;
 
 import com.tcs.edu.LogException;
 import com.tcs.edu.MessageDecorator;
+import com.tcs.edu.repository.HashMapMessageRepository;
+import com.tcs.edu.repository.MessageRepository;
 import com.tcs.edu.Printer;
 import com.tcs.edu.MessageService;
 import com.tcs.edu.Separator;
 import com.tcs.edu.domain.Message;
 
-import java.util.Arrays;
-
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.tcs.edu.decorator.SeverityMapper.severityMapper;
 import static com.tcs.edu.decorator.TimestampMessageDecorator.messageCount;
@@ -26,6 +27,7 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
     private Printer printer;
     private MessageDecorator time;
     private Separator page;
+    private MessageRepository messageRepository = new HashMapMessageRepository();
 
     public OrderedDistinctedMessageService(Printer printer, MessageDecorator time, Separator page) {
         this.printer = printer;
@@ -49,9 +51,14 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
                 super.isArgsValid(currentMessage);
                 if (messageCount % pageSize == 0) {
                     String decoratedCurrentMessage = String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel()));
-                    printer.print(page.separatePage(decoratedCurrentMessage));
+                    currentMessage.setDecoratedMassage(page.separatePage(decoratedCurrentMessage));
+                    messageRepository.create(currentMessage);
                 } else {
-                    printer.print(String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel())));
+                    currentMessage.setDecoratedMassage(
+                            String.format("%s %s",
+                            time.decorate(currentMessage),
+                            severityMapper(currentMessage.getLevel())));
+                    messageRepository.create(currentMessage);
                 }
             } catch (IllegalArgumentException e) {
                 throw new LogException("notValidArgMessage", e);

@@ -1,12 +1,16 @@
 package com.tcs.edu.domain;
 
 import com.tcs.edu.decorator.Severity;
+import static com.tcs.edu.decorator.TimestampMessageDecorator.messageCount;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public class Message {
     private String message;
     private Severity level;
+    private String decoratedMassage;
+    private UUID id;
 
     public Message(String message, Severity level) {
         this.message = message;
@@ -23,6 +27,22 @@ public class Message {
         this.level = Severity.MINOR;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getDecoratedMassage() {
+        return decoratedMassage;
+    }
+
+    public void setDecoratedMassage(String decoratedMassage) {
+        messageCount++;
+        this.decoratedMassage = decoratedMassage;
+    }
 
     public String getMessage() {
         return message;
