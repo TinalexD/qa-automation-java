@@ -31,14 +31,18 @@ class Application {
                 new PageSeparator());
 
         Service.process(message1
-                ,message2
-                ,message3
-                ,message4
-                ,message5
-                ,message6
+                , message2
+                , message3
+                , message4
+                , message5
+                , message6
                 //,message7
                 //,null
-                );
+        );
         System.out.println(Service.findByPrimaryKey(message1.getId()));
+        for (Message current : Service.findAll()) {
+            System.out.println(current);
+        }
+        ;
     }
 }

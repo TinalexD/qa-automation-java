@@ -10,6 +10,7 @@ import com.tcs.edu.Separator;
 import com.tcs.edu.domain.Message;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -122,5 +123,9 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
 
     public Message findByPrimaryKey(UUID key){
         return messageRepository.findByPrimaryKey(key);
+    }
+
+    public Collection<Message> findAll(){
+        return messageRepository.findAll();
     }
 }
