@@ -10,9 +10,15 @@ import java.util.UUID;
 public class HashMapMessageRepository implements MessageRepository {
     private Map<UUID, Message> messages = new HashMap();
 
+    @Override
     public UUID create(Message message){
         message.setId(UUID.randomUUID());
         messages.put(message.getId(), message);
         return message.getId();
+    }
+
+    @Override
+    public Message findByPrimaryKey(UUID key) {
+        return messages.get(key);
     }
 }

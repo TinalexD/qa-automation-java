@@ -11,6 +11,7 @@ import com.tcs.edu.printer.ConsolePrinter;
 import com.tcs.edu.repository.HashMapMessageRepository;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 class Application {
@@ -29,8 +30,7 @@ class Application {
                 new TimestampMessageDecorator(),
                 new PageSeparator());
 
-        Service.process(MessageOrder.DESC, Doubling.DISTINCT
-                ,message1
+        Service.process(message1
                 ,message2
                 ,message3
                 ,message4
@@ -38,6 +38,7 @@ class Application {
                 ,message6
                 //,message7
                 //,null
-        );
+                );
+        System.out.println(Service.findByPrimaryKey(message1.getId()));
     }
 }

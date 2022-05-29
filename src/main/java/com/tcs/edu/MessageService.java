@@ -12,4 +12,6 @@ public interface MessageService {
     void process(Doubling doubling, Message message, Message... sortedMessages);
 
     void process(MessageOrder order, Doubling doubling, Message message, Message... massages);
+
+    Message findByPrimaryKey(UUID key);
 }

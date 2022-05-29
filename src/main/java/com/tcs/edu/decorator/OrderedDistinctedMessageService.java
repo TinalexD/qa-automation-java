@@ -120,5 +120,7 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
         }
     }
 
-
+    public Message findByPrimaryKey(UUID key){
+        return messageRepository.findByPrimaryKey(key);
+    }
 }
