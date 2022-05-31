@@ -53,6 +53,7 @@ public class Message {
         return "Message{" +
                 "message='" + message + '\'' +
                 ", level=" + level +
+                ", id=" + id +
                 '}';
     }
 
