@@ -8,8 +8,10 @@ import com.tcs.edu.decorator.Severity;
 import com.tcs.edu.decorator.TimestampMessageDecorator;
 import com.tcs.edu.domain.Message;
 import com.tcs.edu.printer.ConsolePrinter;
+import com.tcs.edu.repository.HashMapMessageRepository;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 
 class Application {
@@ -24,26 +26,27 @@ class Application {
 
 
         MessageService Service = new OrderedDistinctedMessageService(
-                new ConsolePrinter(),
+                new HashMapMessageRepository(),
                 new TimestampMessageDecorator(),
                 new PageSeparator());
 
-        Service.process(MessageOrder.DESC, Doubling.DISTINCT
-                ,message1
-                ,message2
-                ,message3
-                ,message4
-                ,message5
-                ,message6
+        Service.process(message1
+                , message2
+                , message3
+                , message4
+                , message5
+                , message6
                 //,message7
                 //,null
         );
-
-        System.out.println(message1.getMessage() == message2.getMessage());
-        System.out.println(message1.getMessage() == message4.getMessage());
-        System.out.println(message1.equals(message2));
-        System.out.println(message1.equals(message4));
-        System.out.println(message1.hashCode() == message2.hashCode());
-        System.out.println(message1.hashCode() == message4.hashCode());
+        System.out.println(Service.findByPrimaryKey(message1.getId()));
+        System.out.println("----------");
+        for (Message current : Service.findAll()) {
+            System.out.println(current);
+        }
+        System.out.println("----------");
+        for (Message current : Service.findBySeverity(Severity.MINOR)) {
+            System.out.println(current);
+        }
     }
 }
