@@ -25,13 +25,12 @@ import static com.tcs.edu.decorator.TimestampMessageDecorator.pageSize;
  * @author a.v.demchenko
  */
 public class OrderedDistinctedMessageService extends ValidatedService implements MessageService {
-    private Printer printer;
     private MessageDecorator time;
     private Separator page;
-    private MessageRepository messageRepository = new HashMapMessageRepository();
+    private MessageRepository messageRepository;
 
-    public OrderedDistinctedMessageService(Printer printer, MessageDecorator time, Separator page) {
-        this.printer = printer;
+    public OrderedDistinctedMessageService(MessageRepository messageRepository, MessageDecorator time, Separator page) {
+        this.messageRepository = messageRepository;
         this.time = time;
         this.page = page;
     }

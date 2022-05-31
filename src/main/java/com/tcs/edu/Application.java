@@ -26,7 +26,7 @@ class Application {
 
 
         MessageService Service = new OrderedDistinctedMessageService(
-                new ConsolePrinter(),
+                new HashMapMessageRepository(),
                 new TimestampMessageDecorator(),
                 new PageSeparator());
 
