@@ -62,12 +62,13 @@ public class Message {
         if (o == null || getClass() != o.getClass()) return false;
         Message message1 = (Message) o;
         return Objects.equals(getMessage(), message1.getMessage()) &&
-                getLevel() == message1.getLevel();
+                getLevel() == message1.getLevel() &&
+                Objects.equals(getId(), message1.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getMessage(), getLevel());
+        return Objects.hash(getMessage(), getLevel(), getId());
     }
 
     public Severity getLevel() {
