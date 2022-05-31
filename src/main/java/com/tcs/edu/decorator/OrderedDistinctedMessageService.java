@@ -1,15 +1,18 @@
 package com.tcs.edu.decorator;
 
+import com.tcs.edu.LogException;
 import com.tcs.edu.MessageDecorator;
+import com.tcs.edu.repository.HashMapMessageRepository;
+import com.tcs.edu.repository.MessageRepository;
 import com.tcs.edu.Printer;
 import com.tcs.edu.MessageService;
 import com.tcs.edu.Separator;
 import com.tcs.edu.domain.Message;
 
-import java.util.Arrays;
-
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.tcs.edu.decorator.SeverityMapper.severityMapper;
 import static com.tcs.edu.decorator.TimestampMessageDecorator.messageCount;
@@ -22,12 +25,12 @@ import static com.tcs.edu.decorator.TimestampMessageDecorator.pageSize;
  * @author a.v.demchenko
  */
 public class OrderedDistinctedMessageService extends ValidatedService implements MessageService {
-    private Printer printer;
     private MessageDecorator time;
     private Separator page;
+    private MessageRepository messageRepository;
 
-    public OrderedDistinctedMessageService(Printer printer, MessageDecorator time, Separator page) {
-        this.printer = printer;
+    public OrderedDistinctedMessageService(MessageRepository messageRepository, MessageDecorator time, Separator page) {
+        this.messageRepository = messageRepository;
         this.time = time;
         this.page = page;
     }
@@ -44,13 +47,21 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
         Collections.addAll(listOfMessages, massages);
 
         for (Message currentMessage : listOfMessages) {
-            if (super.isArgsValid(currentMessage)) {
+            try {
+                super.isArgsValid(currentMessage);
                 if (messageCount % pageSize == 0) {
                     String decoratedCurrentMessage = String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel()));
-                    printer.print(page.separatePage(decoratedCurrentMessage));
+                    currentMessage.setDecoratedMassage(page.separatePage(decoratedCurrentMessage));
+                    messageRepository.create(currentMessage);
                 } else {
-                    printer.print(String.format("%s %s", time.decorate(currentMessage), severityMapper(currentMessage.getLevel())));
+                    currentMessage.setDecoratedMassage(
+                            String.format("%s %s",
+                            time.decorate(currentMessage),
+                            severityMapper(currentMessage.getLevel())));
+                    messageRepository.create(currentMessage);
                 }
+            } catch (IllegalArgumentException e) {
+                throw new LogException("notValidArgMessage", e);
             }
         }
     }
@@ -61,28 +72,30 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
      * @param sortedMessages список сообщений
      */
     public void process(Doubling doubling, Message message, Message... sortedMessages) {
-        ArrayList<Message> listOfMassages = new ArrayList<>();
-        listOfMassages.add(message);
-        listOfMassages.addAll(Arrays.asList(sortedMessages));
-
-        Message[] filteredMessages = new Message[sortedMessages.length + 1];
-        int filterCount = 0;
         if (doubling == Doubling.DISTINCT) {
+            ArrayList<Message> listOfMassages = new ArrayList<>();
             ArrayList<String> listOfDublicates = new ArrayList<>();
-            for (Message currentMessage : listOfMassages) {
-                if (!listOfDublicates.contains(currentMessage.getMessage())) {
-                    listOfDublicates.add(currentMessage.getMessage());
-                    filteredMessages[filterCount] = currentMessage;
-                    filterCount++;
+            try {
+                super.isArgsValid(message);
+                listOfDublicates.add(message.getMessage());
+                int filterCount = 0;
+                for (int i = 0; i < sortedMessages.length - 1; i++) {
+                    super.isArgsValid(sortedMessages[i]);
+                    if (!listOfDublicates.contains(sortedMessages[i].getMessage())) {
+                        listOfDublicates.add(sortedMessages[i].getMessage());
+                        listOfMassages.add(sortedMessages[i]);
+                    }
                 }
+
+                Message[] filteredMessages = listOfMassages.stream().toArray(Message[]::new);
+                process(message, filteredMessages);
+            } catch (IllegalArgumentException e) {
+                throw new LogException("notValidArgMessage", e);
             }
         } else {
-            for (Message currentMessage : listOfMassages) {
-                filteredMessages[filterCount] = currentMessage;
-                filterCount++;
-            }
+            process(message, sortedMessages);
         }
-        process(new Message(), filteredMessages);
+
 
     }
 
@@ -93,23 +106,29 @@ public class OrderedDistinctedMessageService extends ValidatedService implements
      * @param massages список сообщений
      */
     public void process(MessageOrder order, Doubling doubling, Message message, Message... massages) {
-        Message[] sortedMessages = new Message[massages.length + 1];
-        int messageNumber = 0;
+        Message[] sortedMessages = new Message[massages.length];
         if (order == MessageOrder.DESC) {
-            for (int i = massages.length - 1; i >= 0; i--) {
+            int messageNumber = 0;
+            for (int i = massages.length - 2; i >= 0; i--) {
                 sortedMessages[messageNumber] = massages[i];
                 messageNumber++;
             }
             sortedMessages[sortedMessages.length - 1] = message;
+            process(doubling, massages[massages.length - 1], sortedMessages);
         } else {
-            for (Message currentMessage : massages) {
-                messageNumber++;
-                sortedMessages[messageNumber] = currentMessage;
-            }
-            sortedMessages[0] = message;
+            process(doubling, message, massages);
         }
-        process(doubling, new Message(), sortedMessages);
     }
 
+    public Message findByPrimaryKey(UUID key){
+        return messageRepository.findByPrimaryKey(key);
+    }
 
+    public Collection<Message> findAll(){
+        return messageRepository.findAll();
+    }
+
+    public Collection<Message> findBySeverity(Severity by){
+        return messageRepository.findBySeverity(by);
+    }
 }
