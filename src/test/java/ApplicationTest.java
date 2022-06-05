@@ -7,6 +7,7 @@ import com.tcs.edu.decorator.TimestampMessageDecorator;
 import com.tcs.edu.domain.Message;
 import com.tcs.edu.repository.HashMapMessageRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -25,7 +26,6 @@ class ApplicationTest {
     Message message4 = null;
     Message message5 = null;
     Message message6 = null;
-    Message message7 = null;
 
     @BeforeEach
     public void setUp() {
@@ -105,17 +105,21 @@ class ApplicationTest {
                 () -> filteredMessages.stream().forEach(message -> assertThat(minorMessages).contains(message))
         );
     }
+    @Nested
+    class Negative{
+        Message message7 = null;
 
-    @Test
-    public void shouldGetException() {
-        assertThatExceptionOfType(LogException.class).isThrownBy(
-                () -> Service.process(message1
-                        , message2
-                        , message3
-                        , message4
-                        , message5
-                        , message6
-                        , message7
-                )).withMessage("notValidArgMessage");
+        @Test
+        public void shouldGetException() {
+            assertThatExceptionOfType(LogException.class).isThrownBy(
+                    () -> Service.process(message1
+                            , message2
+                            , message3
+                            , message4
+                            , message5
+                            , message6
+                            , message7
+                    )).withMessage("notValidArgMessage");
+        }
     }
 }
