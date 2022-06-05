@@ -10,7 +10,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ApplicationTest {
 
@@ -64,16 +69,36 @@ class ApplicationTest {
                 , message5
                 , message6
         );
-        for (Message current : Service.findAll()) {
-            System.out.println(current);
-        }
+        Collection<Message> allMessages = new ArrayList<>();
+        allMessages.add(message1);
+        allMessages.add(message2);
+        allMessages.add(message3);
+        allMessages.add(message4);
+        allMessages.add(message5);
+        allMessages.add(message6);
+        Collection<Message> addedMessages = Service.findBySeverity(Severity.MINOR);
+        addedMessages.stream().forEach(message -> assertTrue(addedMessages.contains(message)));
+
     }
 
     @Test
     public void returnMessagesBySeverity() {
-        for (Message current : Service.findBySeverity(Severity.MINOR)) {
-            System.out.println(current);
-        }
+        Service.process(message1
+                , message2
+                , message3
+                , message4
+                , message5
+                , message6
+        );
+        Collection<Message> filteredMessages = Service.findBySeverity(Severity.MINOR);
+        Collection<Message> minorMessages = new ArrayList<>();
+        minorMessages.add(message1);
+        minorMessages.add(message2);
+        minorMessages.add(message3);
+        minorMessages.add(message4);
+        minorMessages.add(message5);
+        assertEquals(5, filteredMessages.size());
+        filteredMessages.stream().forEach(message -> assertTrue(minorMessages.contains(message)));
     }
 
     @Test
