@@ -6,16 +6,15 @@ import com.tcs.edu.decorator.Severity;
 import com.tcs.edu.decorator.TimestampMessageDecorator;
 import com.tcs.edu.domain.Message;
 import com.tcs.edu.repository.HashMapMessageRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class ApplicationTest {
 
@@ -39,9 +38,9 @@ class ApplicationTest {
 
 
         Service = new OrderedDistinctedMessageService(
-                  new HashMapMessageRepository(),
-                  new TimestampMessageDecorator(),
-                  new PageSeparator());
+                new HashMapMessageRepository(),
+                new TimestampMessageDecorator(),
+                new PageSeparator());
 
 
     }
@@ -55,7 +54,7 @@ class ApplicationTest {
                 , message5
                 , message6
         );
-        Assertions.assertEquals(message1, Service.findByPrimaryKey(message1.getId()));
+        assertThat(message1).isEqualTo(Service.findByPrimaryKey(message1.getId()));
 
 
     }
@@ -77,7 +76,11 @@ class ApplicationTest {
         allMessages.add(message5);
         allMessages.add(message6);
         Collection<Message> addedMessages = Service.findBySeverity(Severity.MINOR);
-        addedMessages.stream().forEach(message -> assertTrue(addedMessages.contains(message)));
+
+        assertAll(
+                () -> assertThat(allMessages.size()).isEqualTo(6),
+                () -> addedMessages.stream().forEach(message -> assertThat(addedMessages).contains(message))
+        );
 
     }
 
@@ -97,21 +100,22 @@ class ApplicationTest {
         minorMessages.add(message3);
         minorMessages.add(message4);
         minorMessages.add(message5);
-        assertEquals(5, filteredMessages.size());
-        filteredMessages.stream().forEach(message -> assertTrue(minorMessages.contains(message)));
+        assertAll(
+                () -> assertThat(filteredMessages.size()).isEqualTo(5),
+                () -> filteredMessages.stream().forEach(message -> assertThat(minorMessages).contains(message))
+        );
     }
 
     @Test
     public void shouldGetException() {
-        assertThrows(LogException.class,
+        assertThatExceptionOfType(LogException.class).isThrownBy(
                 () -> Service.process(message1
-                    , message2
-                    , message3
-                    , message4
-                    , message5
-                    , message6
-                    , message7
-            )
-        );
+                        , message2
+                        , message3
+                        , message4
+                        , message5
+                        , message6
+                        , message7
+                )).withMessage("notValidArgMessage");
     }
 }
