@@ -45,68 +45,63 @@ class ApplicationTest {
 
     }
 
-    @Test
-    public void returnCurrentMessage() {
-        Service.process(message1
-                , message2
-                , message3
-                , message4
-                , message5
-                , message6
-        );
-        assertThat(message1).isEqualTo(Service.findByPrimaryKey(message1.getId()));
-
-
-    }
-
-    @Test
-    public void returnAllMessages() {
-        Service.process(message1
-                , message2
-                , message3
-                , message4
-                , message5
-                , message6
-        );
-        Collection<Message> allMessages = new ArrayList<>();
-        allMessages.add(message1);
-        allMessages.add(message2);
-        allMessages.add(message3);
-        allMessages.add(message4);
-        allMessages.add(message5);
-        allMessages.add(message6);
-        Collection<Message> addedMessages = Service.findBySeverity(Severity.MINOR);
-
-        assertAll(
-                () -> assertThat(allMessages.size()).isEqualTo(6),
-                () -> addedMessages.stream().forEach(message -> assertThat(addedMessages).contains(message))
-        );
-
-    }
-
-    @Test
-    public void returnMessagesBySeverity() {
-        Service.process(message1
-                , message2
-                , message3
-                , message4
-                , message5
-                , message6
-        );
-        Collection<Message> filteredMessages = Service.findBySeverity(Severity.MINOR);
-        Collection<Message> minorMessages = new ArrayList<>();
-        minorMessages.add(message1);
-        minorMessages.add(message2);
-        minorMessages.add(message3);
-        minorMessages.add(message4);
-        minorMessages.add(message5);
-        assertAll(
-                () -> assertThat(filteredMessages.size()).isEqualTo(5),
-                () -> filteredMessages.stream().forEach(message -> assertThat(minorMessages).contains(message))
-        );
-    }
     @Nested
-    class Negative{
+    class Positive {
+
+        @BeforeEach
+        public void serviceSetUp() {
+            Service.process(message1
+                    , message2
+                    , message3
+                    , message4
+                    , message5
+                    , message6
+            );
+        }
+
+        @Test
+        public void returnCurrentMessage() {
+            assertThat(message1).isEqualTo(Service.findByPrimaryKey(message1.getId()));
+
+        }
+
+        @Test
+        public void returnAllMessages() {
+            Collection<Message> allMessages = new ArrayList<>();
+            allMessages.add(message1);
+            allMessages.add(message2);
+            allMessages.add(message3);
+            allMessages.add(message4);
+            allMessages.add(message5);
+            allMessages.add(message6);
+            Collection<Message> addedMessages = Service.findBySeverity(Severity.MINOR);
+
+            assertAll(
+                    () -> assertThat(allMessages.size()).isEqualTo(6),
+                    () -> addedMessages.stream().forEach(message -> assertThat(addedMessages).contains(message))
+            );
+
+        }
+
+        @Test
+        public void returnMessagesBySeverity() {
+            Collection<Message> filteredMessages = Service.findBySeverity(Severity.MINOR);
+            Collection<Message> minorMessages = new ArrayList<>();
+            minorMessages.add(message1);
+            minorMessages.add(message2);
+            minorMessages.add(message3);
+            minorMessages.add(message4);
+            minorMessages.add(message5);
+            assertAll(
+                    () -> assertThat(filteredMessages.size()).isEqualTo(5),
+                    () -> filteredMessages.stream().forEach(message -> assertThat(minorMessages).contains(message))
+            );
+        }
+
+    }
+
+    @Nested
+    class Negative {
         Message message7 = null;
 
         @Test
