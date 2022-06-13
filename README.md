@@ -32,7 +32,7 @@ Agenda <sup>14 недель</sup>
 ======
 28 ак.ч.
 
-Java Application Building <sup>1 вебинар, 1 неделя</sup>
+Java ApplicationTest Building <sup>1 вебинар, 1 неделя</sup>
 -------------------------
 
 ### Local GIT versioning workflow <sup>15 мин</sup>
@@ -91,7 +91,7 @@ Java Application Building <sup>1 вебинар, 1 неделя</sup>
 └── src
   └── main
       └── java
-          ├── Application.java
+          ├── ApplicationTest.java
           └── ConsolePrinter.java
 ```
 - [ ] Build lifecycles: 3
@@ -112,7 +112,7 @@ Java Application Building <sup>1 вебинар, 1 неделя</sup>
 
 ---
 
-Java Application Development <sup>9</sup>
+Java ApplicationTest Development <sup>9</sup>
 ----------------------------
 
 ### IDEA Demo for developing <sup>0.2</sup>
@@ -402,8 +402,8 @@ Developing autotests with JUnit <sup>1</sup>
 Docker for QA <sup>1</sup>
 -------------
 
-### Application overview <sup>0.2</sup>
-- [ ] Application architecture
+### ApplicationTest overview <sup>0.2</sup>
+- [ ] ApplicationTest architecture
 - DB
 - backend
 - API
@@ -469,7 +469,7 @@ Testing DB applications <sup>1</sup>
 -----------------------
 
 ### DBMS overview <sup>0.2</sup>
-- [ ] Application testing architecture
+- [ ] ApplicationTest testing architecture
 - [ ] Test scopes
 - [ ] Testing stateful applications
 - [ ] Test fixture patterns
