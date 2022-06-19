@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -33,7 +34,9 @@ public class ApiTest {
                 "P@ssw0rd"
         );
         Statement alterTable = connection.createStatement();
-        alterTable.execute("alter table country ALTER COLUMN id ADD generated always as identity (START WITH 11)");
+        alterTable.execute("alter table country " +
+                "ALTER COLUMN id " +
+                "ADD generated always as identity (START WITH 11)");
 
         PreemptiveBasicAuthScheme authScheme = new PreemptiveBasicAuthScheme();
         authScheme.setUserName("admin");
@@ -63,10 +66,11 @@ public class ApiTest {
     public void clearTestsData() throws SQLException {
         Statement check = connection.createStatement();
         ResultSet result = check.executeQuery("SELECT * FROM country where id > 10");
-        if (result.next()){
+        if (result.next()) {
             PreparedStatement delete = connection.prepareStatement("DELETE FROM country WHERE ID >10");
             delete.executeUpdate();
-        };
+        }
+        ;
     }
 
     @AfterAll
@@ -77,26 +81,10 @@ public class ApiTest {
     }
 
     @Test
-    public void createCountry() {
-        given()
-                .contentType("application/json")
-                .body("{\n" +
-                        "  \"countryName\": \"II\"\n" +
-                        "}")
-        .when()
-                .post("api/countries")
-        .then()
-                .statusCode(201)
-                .body("id", not(empty()));
-
-
-    }
-
-    @Test
     public void findCountry() {
         when()
                 .get("api/countries?countryName.contains=TO").
-        then()
+                then()
                 .statusCode(200).body("[0].id", is(testCountryID));
     }
 
@@ -105,12 +93,12 @@ public class ApiTest {
         given()
                 .contentType("application/json")
                 .body("{\n" +
-                        "  \"id\": " +testCountryID + ",\n" +
+                        "  \"id\": " + testCountryID + ",\n" +
                         "  \"countryName\": \"TT\"\n" +
                         "}")
-        .when()
+                .when()
                 .patch("api/countries/" + testCountryID)
-        .then()
+                .then()
                 .statusCode(200)
                 .body("id", is(testCountryID),
                         "countryName", is("TT"));
@@ -123,7 +111,44 @@ public class ApiTest {
 
         when()
                 .get("api/countries?id.equals=" + testCountryID).
-        then()
+                then()
                 .statusCode(200).body("[0]", isEmptyOrNullString());
+    }
+
+    @Nested
+    class nonAlteredTable {
+        @BeforeEach
+        public void clearIdentity() throws SQLException {
+            Statement alterTable = connection.createStatement();
+            alterTable.execute("alter table country ALTER COLUMN id DROP IDENTITY");
+        }
+
+        @AfterEach
+        public void backingIdentity() throws SQLException {
+            Statement maxID = connection.createStatement();
+            ResultSet maxIDResult = maxID.executeQuery("select max(ID) from country");
+            maxIDResult.next();
+            String sql = "alter table country " +
+                    "ALTER COLUMN id " +
+                    "ADD generated always as identity (START WITH "+maxIDResult.getLong(1)+")";
+            Statement alterTable = connection.createStatement();
+            alterTable.execute(sql);
+        }
+
+        @Test
+        public void createCountry() {
+            given()
+                    .contentType("application/json")
+                    .body("{\n" +
+                            "  \"countryName\": \"II\"\n" +
+                            "}")
+                    .when()
+                    .post("api/countries")
+                    .then()
+                    .statusCode(201)
+                    .body("id", not(empty()));
+
+
+        }
     }
 }
